@@ -21,16 +21,16 @@ def valid_number?(num)
   num.to_i() != 0
 end
 
-def operation_to_message(op)
+def operation_to_message(op, number1, number2)
   case op
   when '1'
-    'Adding'
+    ['Adding', number1.to_i() + number2.to_i()]
   when '2'
-    'Subtracting'
+    ['Subtracting', number1.to_i() - number2.to_i()]
   when '3'
-    'Multiplying'
+    ['Multiplying', number1.to_i() * number2.to_i()]
   when '4'
-    'Dividing'
+    ['Dividing', number1.to_f() / number2.to_f()]
   end
 end
 
@@ -76,20 +76,9 @@ loop do
       prompt('Must choose 1,2,3, or 4')
     end
   end
-
-  prompt('#{operation_to_message(operator) the two numbers')
-  result = case operator
-           when '1'
-             number1.to_i() + number2.to_i()
-           when '2'
-             number1.to_i() - number2.to_i()
-           when '3'
-             number1.to_i() * number2.to_i()
-           when '4'
-             number1.to_f() / number2.to_f()
-           end
-
-  Kernel.puts("The result is #{result}")
+  answer = operation_to_message(operator, number1, number2)
+  prompt("#{answer[0]} the two numbers")
+  Kernel.puts("The result is #{answer[1]}")
 
   prompt('Do you want to perform another calculation (y or n)')
   answer = Kernel.gets()
