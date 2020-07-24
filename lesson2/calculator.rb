@@ -41,25 +41,25 @@ loop do
   prompt(MESSAGES['welcome'])
   number1 = ''
   loop do
-    prompt('Whats the first number?')
+    prompt(MESSAGES['first_num'])
     number1 = Kernel.gets().chomp()
 
     if valid_number?(number1)
       break
     else
-      prompt('Please enter in a valid number!')
+      prompt(MESSAGES['num_error'])
     end
   end
 
   number2 = ''
   loop do
-    prompt('Whats the second number?')
+    prompt(MESSAGES['second_num'])
     number2 = Kernel.gets().chomp()
 
     if valid_number?(number2)
       break
     else
-      prompt('Please enter a valid number')
+      prompt(MESSAGES['num_error'])
     end
   end
 

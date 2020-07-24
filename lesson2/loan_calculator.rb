@@ -31,10 +31,12 @@ GET Name,
   GET rerun change object?
 PRINT bye message
 =end
-require 'pry'
+
 require 'yaml'
 MESSAGES = YAML.load_file('loan_messages.yml')
 
+# prints a centered centered_string with with edges of buffer_string num times
+# of width = line_width, reply == nil
 def buffer_line(line_width, center_string, buffer_string, num)
   str_len = center_string.length
   buff = (line_width - str_len) / 2
@@ -51,6 +53,7 @@ def buffer_line(line_width, center_string, buffer_string, num)
   end
 end
 
+# cosmetic signiture starting program, reply == nil
 def welcome_show
   line_width = 80
   # signiture = 'Code by Doug Catharine'
@@ -68,6 +71,7 @@ def welcome_show
   buffer_line(line_width, ' ', ' ', 2)
 end
 
+# brief intro, asking name and welcoming/ warm up, reply == nil
 def name_request
   puts MESSAGES['intro']
   puts MESSAGES['my_name']
@@ -78,60 +82,61 @@ def name_request
   puts MESSAGES['wanna_loan']
 end
 
+# confirm valid number, reply = boolean
 def valid_number(input)
-  input.to_i.to_s == input || input.to_f.to_s == input
+  [input.to_i.to_s, input.to_f.to_s].include?(input)
 end
 
+# ask user for a number, validate number , reply == number
 def numeric_request(string, symbol)
   loop do
     puts string
     print symbol
     value = gets.chomp
-    if valid_number(value)
-      return value.to_f
-    else
-      puts MESSAGES['bad_number']
-    end
+    return value.to_f if valid_number(value)
+
+    puts MESSAGES['bad_number']
   end
 end
 
-def month_or_year(string, term)
+# returns true if string reply == letter1, false: reply==letter2.  Cant leave
+# if neither, reply == boolean
+def one_or_other?(string, letter1, letter2)
+  # binding.pry
   loop do
     puts string
     value = gets.chomp
-    if value.downcase.start_with?('m')
-      unit = term > 1 ? 'months' : 'month'
-      return [term, unit]
-    elsif value.downcase.start_with?('y')
-      unit = term > 1 ? 'years' : 'year'
-      term *= 12
-      return [term, unit]
-    else
-      puts MESSAGES['bad_comprehend']
-    end
-  end
-end
+    if value.length == 1
+      return true if value.downcase.start_with?(letter1)
 
-def monthly_payment(principal, interest, months)
-  monthly_payment = principal * (interest / (1 - (1 + interest)**(-months[0])))
-  puts "Your monthly payment is $#{monthly_payment.ceil(2)}"\
-    "for #{months[0].to_i} #{months[1]}."
-end
+      return false if value.downcase.start_with?(letter2)
 
-def break_loop(string)
-  loop do
-    puts string
-    reply = gets.chomp
-    if reply.downcase.start_with?('y') || reply.downcase.start_with?('n')
-      if reply.downcase.start_with?('n')
-        return true
-      else
-        break
-      end
+      next
     end
     puts MESSAGES['bad_comprehend']
   end
 end
+
+# asks for m or y and selects correct noun,
+# reply == array[term in months, correct noun of supplies units]
+def month_or_year(string, term)
+  if one_or_other?(string, 'm', 'y')
+    unit = term > 1 ? 'months' : 'month'
+  else
+    unit = term > 1 ? 'years' : 'year'
+    term *= 12 # change to months for calculations
+  end
+  [term, unit]
+end
+
+# calculates monthly payments and returns payments/length
+def monthly_payment(principal, interest, months)
+  interest /= 100 # convert to points
+  monthly_payment = principal * (interest / (1 - (1 + interest)**(-months[0])))
+  puts "Your monthly payment is $#{monthly_payment.ceil(2)} "\
+    "for #{months[0].to_i} #{months[1]}."
+end
+
 ################################################################################
 # Main Program
 
@@ -140,12 +145,12 @@ name_request
 loop do
   principal = numeric_request(MESSAGES['money'], ':$')
   loop do
-    interest = numeric_request(MESSAGES['rate'], ":%")
-    term = numeric_request(MESSAGES['length'], ":")
+    interest = numeric_request(MESSAGES['rate'], ':%')
+    term = numeric_request(MESSAGES['length'], ':')
     months = month_or_year(MESSAGES['month_or_year'], term)
-    monthly_payment(principal, interest / 100, months)
-    break if break_loop(MESSAGES['change_interest'])
+    monthly_payment(principal, interest, months)
+    break if one_or_other?(MESSAGES['change_interest'], 'n', 'y')
   end
-  break if break_loop(MESSAGES['another_loan'])
+  break if one_or_other?(MESSAGES['another_loan'], 'n', 'y')
 end
 puts MESSAGES['thank_you']

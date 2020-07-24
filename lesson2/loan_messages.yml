@@ -1,21 +1,21 @@
 # starting messages
 signiture: 'Code by Doug Catharine'
 email: 'dougcatharine@gmail.com'
-welcome: "Welcome Doug's loan calculator"
-intro: "Let's introduce ourselves before we discuss buisness."
+welcome: "Welcome to Doug's loan calculator"
+intro: "Let's introduce ourselves before we discuss money."
 my_name: 'My Name is Doug.  Please tell me your first name.'
 buisness: "Now lets get down to buisness"
 wanna_loan: "So you're interested in a loan, huh?"
 
 # bad data
-bad_number: "I didn't quite understand that, try using numerics."
+bad_number: "I didn't quite understand that, please use numbers only."
 bad_comprehend: "I couldn't quite understand that"
 
 # loan messages
 money: "How much money are you looking to borrow?"
 rate: "What interest rate are you looking for"
 length: "How long of a loan were you looking for"
-month_or_year: "Was that in months or years? (type month or year)"
+month_or_year: "Was that in months(m) or years(y)? (type m or y)"
 
 # exit messages
 change_interest: 'Would you like to change the interest or term of the loan?'
