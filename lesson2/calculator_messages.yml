@@ -1,0 +1,4 @@
+welcome: 'Welcome to Calculator!'
+first_num: 'Whats the first number?'
+num_error: 'Please enter in a valid number!'
+second_num: 'Whats the second number?'
