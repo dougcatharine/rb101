@@ -51,10 +51,10 @@ def is_odder?(int)
   int % 2 == 1
 end
 
-puts is_odd?(2)   
-puts is_odd?(5)    
-puts is_odd?(-17)  
-puts is_odder?(-8)   
-puts is_odder?(0)    
-puts is_odder?(7)    
+puts is_odd?(2)
+puts is_odd?(5)
+puts is_odd?(-17)
+puts is_odder?(-8)
+puts is_odder?(0)
+puts is_odder?(7)
 
