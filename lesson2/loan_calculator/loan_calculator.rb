@@ -94,7 +94,7 @@ end
 # asks for 'm or y' and selects correct noun and gives months for loan.
 # input command(String), error(String), term(Int/Float)
 # output = Array[term(Float), unit(String)]
-def month_or_year(command, error, term)
+def month_or_year_request(command, error, term)
   if one_or_other?(command, error, 'm', 'y')
     unit = term > 1 ? 'months' : 'month'
   else
@@ -145,7 +145,8 @@ loop do
   loop do
     interest = numeric_request(MESSAGES['rate'], MESSAGES['bad_number'], ':%')
     term = numeric_request(MESSAGES['length'], MESSAGES['bad_number'], ':')
-    months = month_or_year(MESSAGES['month_or_year'], MESSAGES['m_or_y'], term)
+    months = month_or_year_request(MESSAGES['month_or_year'],
+                                   MESSAGES['m_or_y'], term)
     monthly_payment(principal, interest, months, term)
     break if one_or_other?(MESSAGES['change_interest'],
                            MESSAGES['n_or_y'], 'n', 'y')
