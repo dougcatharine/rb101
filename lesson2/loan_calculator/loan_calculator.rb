@@ -71,16 +71,16 @@ def name_request
 end
 
 # ask user for a number, validates if number.
-# input = string(String), symbol(String)
+# input = command(String), command(String), symbol(String)
 # output = value(Float)
-def numeric_request(string1, string2, symbol)
+def numeric_request(command, error, symbol)
   loop do
-    puts string1
+    puts command
     print symbol
     value = gets.chomp
     return value.to_f if valid_number?(value)
 
-    puts string2
+    puts error
   end
 end
 
@@ -92,10 +92,10 @@ def valid_number?(input)
 end
 
 # asks for 'm or y' and selects correct noun and gives months for loan.
-# input string1(String), string2(String), term(Int/Float)
+# input command(String), error(String), term(Int/Float)
 # output = Array[term(Float), unit(String)]
-def month_or_year(string1, string2, term)
-  if one_or_other?(string1, string2, 'm', 'y')
+def month_or_year(command, error, term)
+  if one_or_other?(command, error, 'm', 'y')
     unit = term > 1 ? 'months' : 'month'
   else
     unit = term > 1 ? 'years' : 'year'
@@ -106,21 +106,21 @@ end
 
 # returns true if string1 reply == letter1, false: reply==letter2.  Can't leave
 # if neither, error message = string2
-# input = string(String), letter1(String), letter2(String)
+# input = command(String), error(String), option1(String), option2(String)
 # output = boolean
-def one_or_other?(string1, string2, letter1, letter2)
+def one_or_other?(command, error, option1, option2)
   # binding.pry
   loop do
-    puts string1
+    puts command
     value = gets.chomp
     if value.length == 1
-      return true if value.downcase.start_with?(letter1)
+      return true if value.downcase.start_with?(option1)
 
-      return false if value.downcase.start_with?(letter2)
+      return false if value.downcase.start_with?(option2)
 
       next
     end
-    puts string2
+    puts error
   end
 end
 
