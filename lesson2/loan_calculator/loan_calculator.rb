@@ -3,8 +3,14 @@
 # V1 20200723
 # V2.3 20200724
 
+################################################################################
+# extensions
+
 require 'yaml'
 MESSAGES = YAML.load_file('loan_messages.yml')
+
+################################################################################
+# procedures
 
 # cosmetic signiture starting program.
 # input = none
@@ -119,13 +125,14 @@ def one_or_other?(string1, string2, letter1, letter2)
 end
 
 # calculates monthly payments and returns payments/length
-# input = principal(Int/Float), interest(Int/Float), months(Int/Float)
+# input = principal(Int/Float), interest(Int/Float), months(Int/Float),
+# term(Int/Float)
 # output = nil
-def monthly_payment(principal, interest, months)
-  interest /= 100 # convert to points
+def monthly_payment(principal, interest, months, term)
+  interest /= (100 * 12) # convert to points monthly
   monthly_payment = principal * (interest / (1 - (1 + interest)**(-months[0])))
   puts "Your monthly payment is $#{monthly_payment.ceil(2)} "\
-    "for #{months[0].to_i} #{months[1]}."
+    "for #{term} #{months[1]}." # bank gets the fractional penny
 end
 
 ################################################################################
@@ -139,7 +146,7 @@ loop do
     interest = numeric_request(MESSAGES['rate'], MESSAGES['bad_number'], ':%')
     term = numeric_request(MESSAGES['length'], MESSAGES['bad_number'], ':')
     months = month_or_year(MESSAGES['month_or_year'], MESSAGES['m_or_y'], term)
-    monthly_payment(principal, interest, months)
+    monthly_payment(principal, interest, months, term)
     break if one_or_other?(MESSAGES['change_interest'],
                            MESSAGES['n_or_y'], 'n', 'y')
   end

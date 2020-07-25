@@ -4,7 +4,7 @@ email: 'dougcatharine@gmail.com'
 welcome: "Welcome to Doug's loan calculator"
 intro: "Let's introduce ourselves before we discuss money."
 my_name: 'My Name is Doug.  Please tell me your first name.'
-buisness: "Now lets get down to buisness"
+buisness: "Now lets get down to buisness..."
 wanna_loan: "So you're interested in a loan, huh?"
 
 # bad data
@@ -15,13 +15,11 @@ m_or_y: 'Please enter m for month, y for year.'
 
 # loan messages
 money: "How much money are you looking to borrow?"
-rate: "What interest rate are you looking for"
-length: "How long of a loan were you looking for"
+rate: "What interest rate are you looking for?"
+length: "How long of a loan were you looking for?\nNumbers only, we'll ask for units in a second."
 month_or_year: "Was that in months(m) or years(y)? (type m or y)"
 
 # exit messages
-change_interest: 'Would you like to change the interest or term of the loan?'
-
-
-another_loan: 'Would you like to calculate another loan value?'
+change_interest: 'Would you like to change the interest or term of the loan? (type y or n)'
+another_loan: 'Would you like to calculate another loan value? (type y or n)"'
 thank_you: "Thanks for using the loan calculator!"

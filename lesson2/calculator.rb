@@ -15,7 +15,6 @@
 require 'yaml'
 MESSAGES = YAML.load_file('calculator_messages.yml')
 
-
 def prompt(message)
   Kernel.puts("=> #{message}")
 end
