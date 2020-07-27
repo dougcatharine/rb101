@@ -88,15 +88,28 @@ end
 
 def valid_input?(input, input_type)
   case input_type
-  when "loan_amt"
-    [input.to_i.to_s, input.to_f.to_s].include?(input) && (input.to_f > 0)
   when "apr"
-    [input.to_i.to_s, input.to_f.to_s].include?(input) && (input.to_f > 0)
+    float_valid?(input)
+  when "loan_amt"
+    float_valid?(input)
   when "duration"
-    input.to_i.to_s.eql?(input) && (input.to_f > 0)
+    int_valid?(input)
   when 'month_or_year'
-    (input.length == 1) && (['m', 'y'].include?(input.downcase))
+    month_or_year_valid?(input)
   end
+end
+
+# methods defined to avoid CyclomaticComplexity Cop on valid_input?
+def float_valid?(input)
+  [input.to_i.to_s, input.to_f.to_s].include?(input) && (input.to_f > 0)
+end
+
+def int_valid?(input)
+  input.to_i.to_s.eql?(input) && (input.to_f > 0)
+end
+
+def month_or_year_valid?(input)
+  (input.length == 1) && (['m', 'y'].include?(input.downcase))
 end
 
 def month_or_year(term, time_unit)
