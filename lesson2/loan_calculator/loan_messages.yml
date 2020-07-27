@@ -7,17 +7,22 @@ my_name: 'My Name is Doug.  Please tell me your first name.'
 buisness: "Now lets get down to buisness..."
 wanna_loan: "So you're interested in a loan, huh?"
 
-# bad data
-bad_number: "I didn't quite understand that, please use numbers only."
-bad_comprehend: "I couldn't quite understand that."
-n_or_y: 'Please enter n for no, y for yes.'
-m_or_y: 'Please enter m for month, y for year.'
+
 
 # loan messages
-money: "How much money are you looking to borrow?"
-rate: "What interest rate are you looking for?"
-length: "How long of a loan were you looking for?\nNumbers only, we'll ask for units in a second."
+loan_amt: "How much money are you looking to borrow?"
+apr: "What interest rate are you looking for?"
+duration: "How long of a loan were you looking for?\nNumbers only, we'll ask for units in a second."
 month_or_year: "Was that in months(m) or years(y)? (type m or y)"
+
+# error_messages
+name_error: 'Make sure to use a valid name'
+loan_amt_error: "Loan amount entered incorectly, please use numbers only!"
+apr_error: "Interest entered incorectly, please use numbers only!"
+duration_error: "Duration entered incorectly, please use whole numbers only!."
+n_or_y: 'Please enter n for no, y for yes.'
+month_or_year_error : 'Please enter m for month, y for year.'
+again: "Would you like to go again? (y or n)"
 
 # exit messages
 change_interest: 'Would you like to change the interest or term of the loan? (type y or n)'

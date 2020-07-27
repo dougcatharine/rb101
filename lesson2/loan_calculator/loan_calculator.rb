@@ -1,7 +1,8 @@
 # loan_calculator.rb
-# Doug Catharine
+# Doug Catharine, review by Srdan Coric
 # V1 20200723
 # V2.3 20200724
+# V3 20200725
 
 ################################################################################
 # extensions
@@ -10,12 +11,9 @@ require 'yaml'
 MESSAGES = YAML.load_file('loan_messages.yml')
 
 ################################################################################
-# procedures
+# methods
 
-# cosmetic signiture starting program.
-# input = none
-# output = 2(Int)
-def welcome_show
+def print_welcome_show
   line_width = 80
   buffer_line(line_width, '*', '*', 3)
   buffer_line(line_width, '-', '-', 1)
@@ -29,11 +27,6 @@ def welcome_show
   buffer_line(line_width, ' ', ' ', 2)
 end
 
-# prints a centered centered_string(str) with with edges of buffer_string(str)
-# num times(int) of line_width(int).
-# input = line_width(Int), center_string(String), buffer_string(string),
-# num(Int)
-# output = num(Int)
 def buffer_line(line_width, center_string, buffer_string, num)
   buffer = center_string(center_string, line_width)
   num.times do
@@ -44,114 +37,105 @@ def buffer_line(line_width, center_string, buffer_string, num)
   end
 end
 
-# finds padding for given center_string(str) on line of width line_width(int).
-# input = center_string(String), line_width(Int)
-# output = Array[left_padding, right_padding]
 def center_string(center_string, line_width)
   str_len = center_string.length
   buff = (line_width - str_len) / 2
-  if 2 * buff + str_len == line_width   # centered?
-    [buff, buff]
-  else                                  # or off by one
-    [buff + 1, buff]
-  end
+  (2 * buff + str_len) == line_width ? [buff, buff] : [buff + 1, buff]
 end
 
-# brief intro, asking name and welcoming/ warm up.
-# input = none
-# output == nil
-def name_request
+def print_greeting
   puts MESSAGES['intro']
   puts MESSAGES['my_name']
-  print 'first name: '
-  first_name = gets.chomp
-  puts "It's great to meet you #{first_name}"
+  print 'first name:'
+end
+
+def print_hello_name
+  print_greeting
+  puts "It's great to meet you #{name_request}"
   puts MESSAGES['buisness']
   puts MESSAGES['wanna_loan']
 end
 
-# ask user for a number, validates if number.
-# input = command(String), command(String), symbol(String)
-# output = value(Float)
-def numeric_request(command, error, symbol)
+def name_request
   loop do
-    puts command
-    print symbol
-    value = gets.chomp
-    return value.to_f if valid_number?(value)
-
-    puts error
-  end
-end
-
-# confirm valid number.
-# input = input(Int/Float)
-# output = boolean
-def valid_number?(input)
-  [input.to_i.to_s, input.to_f.to_s].include?(input)
-end
-
-# asks for 'm or y' and selects correct noun and gives months for loan.
-# input command(String), error(String), term(Int/Float)
-# output = Array[term(Float), unit(String)]
-def month_or_year_request(command, error, term)
-  if one_or_other?(command, error, 'm', 'y')
-    unit = term > 1 ? 'months' : 'month'
-  else
-    unit = term > 1 ? 'years' : 'year'
-    term *= 12 # change to months for calculations
-  end
-  [term, unit]
-end
-
-# returns true if string1 reply == letter1, false: reply==letter2.  Can't leave
-# if neither, error message = string2
-# input = command(String), error(String), option1(String), option2(String)
-# output = boolean
-def one_or_other?(command, error, option1, option2)
-  # binding.pry
-  loop do
-    puts command
-    value = gets.chomp
-    if value.length == 1
-      return true if value.downcase.start_with?(option1)
-
-      return false if value.downcase.start_with?(option2)
-
-      next
+    first_name = gets.chomp
+    if first_name.empty?
+      print_request(MESSAGES['name_error'], '=> ')
+    else
+      puts `clear`
+      return first_name
     end
-    puts error
+  end
+  first_name
+end
+
+def retrieve_input(input_type, symbol)
+  print_request(MESSAGES[input_type], symbol)
+  input = gets.chomp
+  loop do
+    break if valid_input?(input, input_type)
+    puts(MESSAGES["#{input_type}_error"])
+    print_request(MESSAGES[input_type], symbol)
+    input = gets.chomp
+  end
+  input
+end
+
+def print_request(command, symbol)
+  puts command
+  print symbol
+end
+
+def valid_input?(input, input_type)
+  case input_type
+  when "loan_amt"
+    [input.to_i.to_s, input.to_f.to_s].include?(input) && (input.to_f > 0)
+  when "apr"
+    [input.to_i.to_s, input.to_f.to_s].include?(input) && (input.to_f > 0)
+  when "duration"
+    input.to_i.to_s.eql?(input) && (input.to_f > 0)
+  when 'month_or_year'
+    (input.length == 1) && (['m', 'y'].include?(input.downcase))
   end
 end
 
-# calculates monthly payments and returns payments/length
-# input = principal(Int/Float), interest(Int/Float), months(Int/Float),
-# term(Int/Float)
-# output = nil
-def monthly_payment(principal, interest, months, term)
+def month_or_year(term, time_unit)
+  time_unit.eql?('m') ? noun = 'month' : noun = 'year'
+  noun += 's' if term > 1
+  noun
+end
+
+def correct_term(unit, term)
+  term *= 12 if unit.downcase.start_with?('y')
+  term
+end
+
+def monthly_payment(principal, interest, term, noun)
   interest /= (100 * 12) # convert to points monthly
-  monthly_payment = principal * (interest / (1 - (1 + interest)**(-months[0])))
+  monthly_payment = principal * (interest / (1 - (1 + interest)**(-term)))
   puts "Your monthly payment is $#{monthly_payment.ceil(2)} "\
-    "for #{term} #{months[1]}." # bank gets the fractional penny
+    "for #{term} #{noun}." # bank gets the fractional penny
 end
 
 ################################################################################
 # Main Program
 
-welcome_show
-name_request
+print_welcome_show
+print_hello_name
+
 loop do
-  principal = numeric_request(MESSAGES['money'], MESSAGES['bad_number'], ':$')
-  loop do
-    interest = numeric_request(MESSAGES['rate'], MESSAGES['bad_number'], ':%')
-    term = numeric_request(MESSAGES['length'], MESSAGES['bad_number'], ':')
-    months = month_or_year_request(MESSAGES['month_or_year'],
-                                   MESSAGES['m_or_y'], term)
-    monthly_payment(principal, interest, months, term)
-    break if one_or_other?(MESSAGES['change_interest'],
-                           MESSAGES['n_or_y'], 'n', 'y')
-  end
-  break if one_or_other?(MESSAGES['another_loan'], MESSAGES['n_or_y'], 'n', 'y')
+  principal = retrieve_input('loan_amt', '=> $').to_f
+  interest = retrieve_input('apr', '=> %').to_f
+  term = retrieve_input('duration', '=> ').to_i
+  m_o_y = retrieve_input('month_or_year', '=> ')
+  noun = month_or_year(term, m_o_y)
+  term = correct_term(noun, term)
+  puts `clear`
+  monthly_payment(principal, interest, term, noun)
+  puts MESSAGES['again']
+  answer = gets.chomp
+  puts `clear`
+  break if (answer.length == 1) && (answer.start_with?('n'))
 end
 puts MESSAGES['thank_you']
 
