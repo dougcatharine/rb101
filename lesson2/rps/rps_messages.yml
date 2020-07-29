@@ -5,12 +5,14 @@ rules1: "Scissors cuts Paper, Paper covers Rock, Rock crushes Lizard, Lizard poi
 rules2: "Spock, Spock smashes Scissors, Scissors decapitates Lizard, Lizard eats Paper,"
 rules3: "Paper disproves Spock, Spock vaporizes Rock, and as it always has..." 
 rules4: "Rock crushes Scissors"
-return_to_procede: "Hit enter (return) when ready to play."
+press_enter_to_procede: "Hit enter (return) when ready to play."
+
 rematch: "Enter 'y' if you would like to play again, or 'n' if you would like to exit"
+name_error: "Enter a valid name that is 10 or less characters long."
 yes_no_error: "make sure that you only enter 'y' or 'n'"
 general_error: "That's not a valid choice, Please enter as listed below."
 hal_winner: ['I won the game, you loose!', "I'm the winner of the game!", "As expected, you loose the game!"]
-hal_brags: ["I am HAL, I am GREAT.  You will never beat me", "Your intelect is puny compared to the great and powerfull HAL!", "I was wrong once... when I thought I was wrong! Muw ha ha ha ha!"]
-hal_poor_looser: ["I can't believe you won the game.", "You won the game, cheater...", "You won the game only because I have a virus (cough cough)"]
-hal_excuses: ["You win this one, but I'm sure I'll win the next match.", 'You were just lucky', 'I wasnt even really trying.']
-quiter: "Thanks for playing, quiter"
+hal_brags: ["I am HAL, I am GREAT.  You will never beat me.", "Your intelect is puny compared to the great and powerfull HAL!", "I was wrong once... when I thought I was wrong! Muw ha ha ha ha!"]
+hal_poor_looser: ["I can't believe you won the game.", "You won the game, cheater...", "You won the game only because I have a virus (cough cough)."]
+hal_excuses: ["You win this one, but I'm sure I'll win the next match.", 'You were just lucky.', 'I wasnt even really trying.']
+quiter: "Thanks for playing, quiter!"
