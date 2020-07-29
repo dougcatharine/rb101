@@ -189,7 +189,7 @@ def print_champion(score_board)
     prompt(MESSAGES["hal_winner"].sample)
     prompt(MESSAGES["hal_brags"].sample)
   else
-    prompt(MESSAGES["hal_poor_looser"].sample)
+    prompt(MESSAGES["hal_poor_loser"].sample)
     prompt(MESSAGES["hal_excuses"].sample)
   end
 end
