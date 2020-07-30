@@ -35,7 +35,7 @@ def response_prompt(message)
 end
 
 def clear_screen
-  puts `clear`
+  system('clear') || system('cls')
 end
 
 # intro methods
