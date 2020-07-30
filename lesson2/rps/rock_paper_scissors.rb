@@ -21,7 +21,7 @@ KEY_BEATS_VALUE = { "Scissors": %w(Paper Lizard),
 LINE_WIDTH = 80
 SCORE_BOARD_WIDTH = 24
 COLUMN_WIDTH = (SCORE_BOARD_WIDTH - 3) / 2
-ROUNDS = 5
+ROUNDS = 1
 
 # ---------------------------------methods--------------------------------------
 # message prompts methods
@@ -45,7 +45,7 @@ def print_greeting
 end
 
 def name_valid?(first_name)
-  !(first_name.empty? || first_name.length > 10)
+  !(first_name.strip.empty? || first_name.length > 10)
 end
 
 def validate_name(first_name)
@@ -88,6 +88,10 @@ def print_rules
 end
 
 # scoreboard methods
+def reset_score
+  { Player: 0, Computer: 0 }
+end
+
 def make_center_text(text_string, padding_string)
   text_string.center(COLUMN_WIDTH, padding_string)
 end
@@ -231,6 +235,10 @@ def go_again?
   end
 end
 
+def winner?(score)
+  score.any? { |_, v| v == ROUNDS }
+end
+
 # ------------------------------------main program------------------------------
 
 print_greeting
@@ -238,14 +246,14 @@ name = name_request
 print_hello_name(name)
 print_rules
 loop do
-  score = { Player: 0, Computer: 0 }
+  score = reset_score
   clear_screen
   loop do
     choice = get_choice.to_s
     computer_choice = VALID_CHOICES.keys.sample.to_s
     adjust_score(score, choice, computer_choice)
     print_display(score, choice, computer_choice, name)
-    break if score.any? { |_, v| v == ROUNDS }
+    break if winner?(score)
   end
   print_champion(score)
   break unless go_again?
