@@ -17,3 +17,5 @@ def rolling_buffer2(input_array, max_buffer_size, new_element)
   buffer.shift if buffer.size > max_buffer_size
   buffer
 end
+
+#yes, rolling_buffer1 mutates the variable buffer, while rolling_buffer2 does not.  
