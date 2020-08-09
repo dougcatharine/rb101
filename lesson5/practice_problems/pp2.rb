@@ -1,9 +1,6 @@
 # pp2.rb
 # Doug Catharine
-# 20200807
-
-
-How would you order this array of hashes based on the year of publication of each book, from the earliest to the latest?
+# 20200808
 
 books = [
   {title: 'One Hundred Years of Solitude', author: 'Gabriel Garcia Marquez', published: '1967'},
@@ -11,3 +8,9 @@ books = [
   {title: 'War and Peace', author: 'Leo Tolstoy', published: '1869'},
   {title: 'Ulysses', author: 'James Joyce', published: '1922'}
 ]
+
+#How would you order this array of hashes based on the year of publication of each book, from the earliest to the latest?
+
+books.sort_by do |h|
+   h[:published]
+end
