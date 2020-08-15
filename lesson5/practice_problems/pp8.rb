@@ -12,3 +12,26 @@ hsh.each do |k,v|
   end
 end
 
+
+# solution 
+vowels = 'aeiou'
+
+hsh.each do |_, value|
+  value.each do |str|
+    str.chars.each do |char|
+      puts char if vowels.include?(char)
+    end
+  end
+end
+# e
+# u
+# i
+# o
+# o
+# u
+# e
+# o
+# e
+# e
+# a
+# o
