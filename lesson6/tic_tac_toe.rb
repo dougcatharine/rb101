@@ -6,7 +6,7 @@ require 'pry'
 require 'yaml'
 MESSAGES = YAML.load_file('ttt_messages.yml')
 LINE_WIDTH = 80
-MINIMAX_VAL = 100;
+MINIMAX_VAL = 100
 
 PLAYER_MOVE = 'O'
 COMPUTER_MOVE = 'X'
@@ -146,13 +146,6 @@ def get_move(error=false)
   gets.chomp.to_i
 end
 
-def computer_move(board_status)
-  score_hash = minimax(board_status)
-  binding.pry
-  board_status[score_hash.key(score_hash.values.min)] = COMPUTER_MOVE
-  #board_status[open_board(board_status).sample] = COMPUTER_MOVE
-end
-
 def game_over?(board_status)
   board_full?(board_status) || winner(board_status)
 end
@@ -217,32 +210,40 @@ def print_round(round_number)
 end
 
 def score(brd)
-  return 100 if winner(brd) == "computer"
-  return -100 if winner(brd) == "player"
-  return 0
+  return 1 if winner(brd) == "computer"
+  return -1 if winner(brd) == "player"
+  0
 end
 
-def minimax(brd, player_is_comp = true)
-  #computer = “X” 
-  move = {}
-  bestMove = {}
-  
-  availSpots = open_board(brd)
-  return 0 if availSpots.length == 0
+def minimax(brd, player_is_computer = false)
+  return score(brd) if game_over?(brd)
+  champion = player_is_computer ? -999 : 999
+  open_board(brd).each do |cell|
+    brd[cell] = player_is_computer ? COMPUTER_MOVE : PLAYER_MOVE
+    challanger = minimax(brd, !player_is_computer)
+    brd[cell] = ' '
+    champion = if player_is_computer
+                 [challanger, champion].max
+               else
+                 [challanger, champion].min
+               end
+  end
+  champion
+end
 
-  availSpots.each do |cell| 
-    brd[cell] = player_is_comp ? COMPUTER_MOVE : PLAYER_MOVE
-    moves = score(brd)
-    move[cell] = minimax(brd, !player_is_comp)
-    brd[cell] = AVAILABLE_MOVE
-    #binding.pry
-    if player_is_comp
-      bestMove =  [move[cell], moves].max
-    else
-      bestMove =  [move[cell], moves].min
+def computer_move(brd)
+  champion = -999
+  move = nil
+  open_board(brd).each do |cell|
+    brd[cell] = COMPUTER_MOVE
+    challanger = minimax(brd)
+    brd[cell] = ' '
+    if challanger > champion
+      champion = challanger
+      move = cell
     end
   end
-  bestMove
+  brd[move] = COMPUTER_MOVE
 end
 
 # main script
@@ -260,13 +261,14 @@ loop do
       computer_move(board_marks)
       break if game_over?(board_marks)
     end
+    clear_screen
     puts "game over"
     if winner(board_marks)
       puts "#{winner(board_marks)} WINS"
     else
       puts "It's a tie"
     end
-    puts "hit any key to start next round"
+    puts "hit enter/return to start next round"
     gets
   end
   break unless go_again?
