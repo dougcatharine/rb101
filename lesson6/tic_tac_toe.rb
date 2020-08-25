@@ -1,6 +1,8 @@
 # tic_tac_toe.rb
 # Doug Catharine
-# 20200816
+# 20200816 V1.0  working game
+# 20200821 V2.0  minimax version
+# 20200825 V2.1  refactored
 
 require 'yaml'
 MESSAGES = YAML.load_file('ttt_messages.yml')
@@ -26,8 +28,6 @@ end
 def response_prompt(message)
   print "#{message}:"
 end
-
-
 
 def intro
   clear_screen
@@ -58,18 +58,12 @@ def print_hello_name(first_name)
   prompt("Hello, #{first_name}.")
 end
 
-
-
-# def header
-#   send_to_right('   |   |   ')
-# end
+def send_to_right(message)
+  puts message.rjust(LINE_WIDTH)
+end
 
 def footer
   send_to_right('---+---+---')
-end
-
-def send_to_right(message)
-  puts message.rjust(LINE_WIDTH)
 end
 
 def display_row(disp_hsh, row_array)
@@ -97,17 +91,15 @@ end
 def get_number(error=false)
   prompt(MESSAGES['number_error']) if error
   response_prompt('enter number')
-  gets.chomp.to_i
+  gets.chomp
 end
 
 def validate_number(number)
-  while !(number == number.to_s)
+  while !((number == number.to_i.to_s) && (number.to_i > 0))
     number = get_number(true)
   end
-  number
+  number.to_i
 end
-
-
 
 def number_of_rounds
   prompt(MESSAGES['rounds'])
@@ -115,53 +107,76 @@ def number_of_rounds
 end
 
 def board_locations
-  board_marks = {}
-  (1..9).each { |k| board_marks[k] = k.to_s }
-  board_marks
+  brd = {}
+  (1..9).each { |k| brd[k] = k.to_s }
+  brd
 end
 
 def initialize_board
-  board_marks = {}
-  (1..9).each { |k| board_marks[k] = AVAILABLE_MOVE }
-  board_marks
+  brd = {}
+  (1..9).each { |k| brd[k] = AVAILABLE_MOVE }
+  brd
 end
 
+def print_round(round_number, tot_round, score, first_name)
+  clear_screen
+  l_col = "Round #{round_number + 1} of #{tot_round}.  You are #{PLAYER_MOVE}"
+  r_col = "#{first_name} #{score[:player]} | EVE  #{score[:computer]}"
+  space = LINE_WIDTH - (l_col.length + r_col.length)
+  space.times { l_col << ' ' }
+  puts l_col + r_col
+  puts
+end
 
-
-def available_plays?(board_status)
-  board_status.map do |_, v|
-    v.eql? ' '
+def available_plays?(brd)
+  brd.map do |_, v|
+    v.eql?(AVAILABLE_MOVE)
   end
 end
 
-def valid_play?(board_status, play)
-  (1..9).any?(play) ? available_plays?(board_status)[play - 1] : false
+def play_location(board_status)
+  list = available_plays?(board_status)
+  (1..9).select { |num| list[num - 1] }
 end
 
-def open_board(board_status)
+def joinor(ary, sep = ', ', concat = 'or')
+  concat += ' '
+  clone_array = ary.clone
+  clone_array[-1] = (concat + clone_array[-1].to_s)
+  if clone_array.count > 2
+    prompt(clone_array.join(sep))
+  else
+    prompt(clone_array.join(' '))
+  end
+end
+
+def print_avail_moves(brd)
+  prompt("The following moves are available")
+  joinor(play_location(brd))
+end
+
+def open_board(brd)
   plays = []
-  available_plays?(board_status).each_with_index do |bool, idx|
+  available_plays?(brd).each_with_index do |bool, idx|
     plays << (idx + 1) if bool
   end
   plays
 end
 
-def update_board(brd, play)
-  while !valid_play?(brd, play)
-    play = get_move(true)
-  end
-  brd[play] = PLAYER_MOVE
-  computer_move(brd)
+def valid_play?(brd, play)
+  (1..9).any?(play) ? available_plays?(brd)[play - 1] : false
 end
 
 def get_move(error=false)
   prompt(MESSAGES['move_error']) if error
   prompt('enter move')
-  gets.chomp.to_i
+  gets.chomp
 end
 
-def game_over?(board_status)
-  board_full?(board_status) || winner(board_status)
+def score(brd)
+  return 1 if winner(brd) == "computer"
+  return -1 if winner(brd) == "player"
+  0
 end
 
 def board_full?(board_status)
@@ -182,49 +197,8 @@ def winner(board_status)
   nil
 end
 
-def play_location(board_status)
-  list = available_plays?(board_status)
-  (1..9).select { |num| list[num - 1] }
-end
-
-def joinor(ary, sep = ', ', concat = 'or')
-  concat += ' '
-  clone_array = ary.clone
-  clone_array[-1] = (concat + clone_array[-1].to_s)
-  if clone_array.count > 2
-    prompt(clone_array.join(sep))
-  else
-    prompt(clone_array.join(' '))
-  end
-end
-
-def go_again?
-  loop do
-    prompt(MESSAGES['rematch'])
-    answer = gets.chomp.downcase
-    if answer.downcase.eql?('y')
-      return true
-    elsif answer.downcase.eql?('n')
-      return false
-    end
-    prompt(MESSAGES['yes_no_error'])
-  end
-end
-
-def print_round(round_number, tot_round, score, first_name)
-  clear_screen
-  left_col = "Round #{round_number + 1} of #{tot_round}.  You are #{PLAYER_MOVE}"
-  right_col = "#{first_name} #{score[:player]} | EVE  #{score[:computer]}"
-  space = LINE_WIDTH - (left_col.length + right_col.length)
-  space.times { left_col << ' ' }
-  puts left_col + right_col
-  puts
-end
-
-def score(brd)
-  return 1 if winner(brd) == "computer"
-  return -1 if winner(brd) == "player"
-  0
+def game_over?(board_status)
+  board_full?(board_status) || winner(board_status)
 end
 
 def minimax(brd, player_is_computer = false)
@@ -258,6 +232,14 @@ def computer_move(brd)
   brd[move] = COMPUTER_MOVE
 end
 
+def update_board(brd, play)
+  while !valid_play?(brd, play)
+    play = validate_number(get_move(true))
+  end
+  brd[play] = PLAYER_MOVE
+  computer_move(brd)
+end
+
 def enter_to_go
   puts "hit enter/return to start next round"
   gets
@@ -273,9 +255,17 @@ def print_winner(brd, points)
   end
 end
 
-def print_avail_moves(brd)
-  prompt("The following moves are available")
-  joinor(play_location(brd))
+def go_again?
+  loop do
+    prompt(MESSAGES['rematch'])
+    answer = gets.chomp.downcase
+    if answer.downcase.eql?('y')
+      return true
+    elsif answer.downcase.eql?('n')
+      return false
+    end
+    prompt(MESSAGES['yes_no_error'])
+  end
 end
 
 # main script
@@ -289,7 +279,7 @@ loop do
       print_round(round, total_rounds, score, name)
       display_board(board)
       print_avail_moves(board)
-      update_board(board, get_move)
+      update_board(board, validate_number(get_move))
       break if game_over?(board)
     end
     clear_screen
@@ -297,5 +287,5 @@ loop do
     enter_to_go unless (round + 1) == total_rounds
   end
   break unless go_again?
-  prompt(MESSAGES['good_bye'])
 end
+prompt(MESSAGES['good_bye'])

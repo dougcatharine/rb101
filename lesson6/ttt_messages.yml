@@ -7,18 +7,18 @@ intro: 'Welcome to Tic Tac Toe'
 my_name: 'My Name is EVE, short for Extraterrestrial Vegetation Evaluator, what is yours?'
 
 
-rules1: 'The rules to tic tac toe are simple, the first person to get three     ^'
-rules2: 'identical markers in a row wins the round.                             |'
-rules3: 'By convention, you will go first.  You will also be the X marker.      |'
-rules4: 'The location of the cells are shown above to the right. ---------------+'
+rules1: 'The rules to tic tac toe are simple, the first person to get three'
+rules2: 'identical markers in a row wins the round.'
+rules3: 'By convention, you will go first.  You will also be the X marker.'
+rules4: 'The location of the cells are shown above and to the right.'
 rounds: 'How many rounds of Tic Tac Tow would you like to play?'
 x_marker: 'You are the X marker'
 yes_no_error: "make sure that you only enter 'y' or 'n'"
 rematch: "Enter 'y' if you would like to play again, or 'n' if you would like to exit"
 
-move_error: "The move you entered is not valid.  Please enter a valid number from above."
+move_error: "The move you entered is not available.  Please enter a valid number from above."
 name_error: 'The name you entered is not valid.  Please enter a valid name.'
-number_error: 'The number you entered is not valid.  Please enter a valid number.'
+number_error: 'The number you entered is not valid.  Please enter a valid integer greater than 0.'
 yes_no_error: "The response you entered is not valid.  Please enter either 'y','Y','n', or 'n'"
 
 good_bye: 'Thanks for playing!'
