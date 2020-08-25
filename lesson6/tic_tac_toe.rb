@@ -2,18 +2,22 @@
 # Doug Catharine
 # 20200816
 
-require 'pry'
 require 'yaml'
 MESSAGES = YAML.load_file('ttt_messages.yml')
 LINE_WIDTH = 80
-MINIMAX_VAL = 100
+MINIMAX_VAL = 999
 
-PLAYER_MOVE = 'O'
-COMPUTER_MOVE = 'X'
+PLAYER_MOVE = 'X'
+COMPUTER_MOVE = 'O'
 AVAILABLE_MOVE = ' '
 WINNING_MOVES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] +
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] +
                 [[1, 5, 9], [3, 5, 7]]
+score = { player: 0, computer: 0 }
+
+def clear_screen
+  system('clear') || system('cls')
+end
 
 def prompt(message)
   puts "=> #{message}"
@@ -23,8 +27,11 @@ def response_prompt(message)
   print "#{message}:"
 end
 
-def clear_screen
-  system('clear') || system('cls')
+
+
+def intro
+  clear_screen
+  prompt(MESSAGES['intro'])
 end
 
 def name_valid?(first_name)
@@ -33,7 +40,7 @@ end
 
 def validate_name(first_name)
   while !name_valid?(first_name)
-    print_error('name_error')
+    prompt(MESSAGES['name_error'])
     response_prompt('Name')
     first_name = gets.chomp
   end
@@ -46,9 +53,37 @@ def name_request
   validate_name(gets.chomp)
 end
 
-def print_hello_name(user_name)
+def print_hello_name(first_name)
   clear_screen
-  prompt("Hello, #{user_name}.")
+  prompt("Hello, #{first_name}.")
+end
+
+
+
+# def header
+#   send_to_right('   |   |   ')
+# end
+
+def footer
+  send_to_right('---+---+---')
+end
+
+def send_to_right(message)
+  puts message.rjust(LINE_WIDTH)
+end
+
+def display_row(disp_hsh, row_array)
+  send_to_right(" #{disp_hsh[row_array[0]]} \
+| #{disp_hsh[row_array[1]]} | \
+#{disp_hsh[row_array[2]]} ")
+end
+
+def display_board(display_hash)
+  display_row(display_hash, [1, 2, 3])
+  footer
+  display_row(display_hash, [4, 5, 6])
+  footer
+  display_row(display_hash, [7, 8, 9])
 end
 
 def print_rules
@@ -59,18 +94,20 @@ def print_rules
   prompt(MESSAGES['rules4'])
 end
 
-def validate_number(number)
-  while !number.to_i.to_s
-    number = get_number(true)
-  end
-  number.to_i
-end
-
 def get_number(error=false)
-  prompt("gen error message") if error
+  prompt(MESSAGES['number_error']) if error
   response_prompt('enter number')
   gets.chomp.to_i
 end
+
+def validate_number(number)
+  while !(number == number.to_s)
+    number = get_number(true)
+  end
+  number
+end
+
+
 
 def number_of_rounds
   prompt(MESSAGES['rounds'])
@@ -89,31 +126,7 @@ def initialize_board
   board_marks
 end
 
-def send_to_right(message)
-  puts message.rjust(LINE_WIDTH)
-end
 
-def header
-  send_to_right('   |   |   ')
-end
-
-def footer
-  send_to_right('---+---+---')
-end
-
-def display_row(disp_hsh, row_array)
-  send_to_right(" #{disp_hsh[row_array[0]]} \
-| #{disp_hsh[row_array[1]]} | \
-#{disp_hsh[row_array[2]]} ")
-end
-
-def display_board(display_hash)
-  display_row(display_hash, [1, 2, 3])
-  footer
-  display_row(display_hash, [4, 5, 6])
-  footer
-  display_row(display_hash, [7, 8, 9])
-end
 
 def available_plays?(board_status)
   board_status.map do |_, v|
@@ -133,15 +146,16 @@ def open_board(board_status)
   plays
 end
 
-def update_board(board_status, play)
-  while !valid_play?(board_status, play)
+def update_board(brd, play)
+  while !valid_play?(brd, play)
     play = get_move(true)
   end
-  board_status[play] = PLAYER_MOVE
+  brd[play] = PLAYER_MOVE
+  computer_move(brd)
 end
 
 def get_move(error=false)
-  prompt("gen error message") if error
+  prompt(MESSAGES['move_error']) if error
   prompt('enter move')
   gets.chomp.to_i
 end
@@ -193,20 +207,18 @@ def go_again?
     elsif answer.downcase.eql?('n')
       return false
     end
-    print_error('yes_no_error')
+    prompt(MESSAGES['yes_no_error'])
   end
 end
 
-def intro
+def print_round(round_number, tot_round, score, first_name)
   clear_screen
-  prompt(MESSAGES['intro'])
-  print_hello_name(name_request)
-  print_rules
-end
-
-def print_round(round_number)
-  clear_screen
-  prompt("Round #{round_number + 1}")
+  left_col = "Round #{round_number + 1} of #{tot_round}.  You are #{PLAYER_MOVE}"
+  right_col = "#{first_name} #{score[:player]} | EVE  #{score[:computer]}"
+  space = LINE_WIDTH - (left_col.length + right_col.length)
+  space.times { left_col << ' ' }
+  puts left_col + right_col
+  puts
 end
 
 def score(brd)
@@ -217,11 +229,11 @@ end
 
 def minimax(brd, player_is_computer = false)
   return score(brd) if game_over?(brd)
-  champion = player_is_computer ? -999 : 999
+  champion = player_is_computer ? -MINIMAX_VAL : MINIMAX_VAL
   open_board(brd).each do |cell|
     brd[cell] = player_is_computer ? COMPUTER_MOVE : PLAYER_MOVE
     challanger = minimax(brd, !player_is_computer)
-    brd[cell] = ' '
+    brd[cell] = AVAILABLE_MOVE
     champion = if player_is_computer
                  [challanger, champion].max
                else
@@ -232,12 +244,12 @@ def minimax(brd, player_is_computer = false)
 end
 
 def computer_move(brd)
-  champion = -999
+  champion = -MINIMAX_VAL
   move = nil
   open_board(brd).each do |cell|
     brd[cell] = COMPUTER_MOVE
     challanger = minimax(brd)
-    brd[cell] = ' '
+    brd[cell] = AVAILABLE_MOVE
     if challanger > champion
       champion = challanger
       move = cell
@@ -246,30 +258,44 @@ def computer_move(brd)
   brd[move] = COMPUTER_MOVE
 end
 
+def enter_to_go
+  puts "hit enter/return to start next round"
+  gets
+end
+
+def print_winner(brd, points)
+  prompt("Round over")
+  if winner(brd)
+    prompt("#{winner(brd)} WINS")
+    winner(brd) == "computer" ? points[:computer] += 1 : points[:player] += 1
+  else
+    prompt("It's a tie")
+  end
+end
+
+def print_avail_moves(brd)
+  prompt("The following moves are available")
+  joinor(play_location(brd))
+end
+
 # main script
 intro
+print_hello_name(name = name_request)
+print_rules
 loop do
-  number_of_rounds.times do |round|
-    board_marks = initialize_board
+  (total_rounds = number_of_rounds).times do |round|
+    board = initialize_board
     loop do
-      print_round(round)
-      display_board(board_marks)
-      prompt("The following moves are available")
-      joinor(play_location(board_marks))
-      update_board(board_marks, get_move)
-      # binding.pry
-      computer_move(board_marks)
-      break if game_over?(board_marks)
+      print_round(round, total_rounds, score, name)
+      display_board(board)
+      print_avail_moves(board)
+      update_board(board, get_move)
+      break if game_over?(board)
     end
     clear_screen
-    puts "game over"
-    if winner(board_marks)
-      puts "#{winner(board_marks)} WINS"
-    else
-      puts "It's a tie"
-    end
-    puts "hit enter/return to start next round"
-    gets
+    print_winner(board, score)
+    enter_to_go unless (round + 1) == total_rounds
   end
   break unless go_again?
+  prompt(MESSAGES['good_bye'])
 end
