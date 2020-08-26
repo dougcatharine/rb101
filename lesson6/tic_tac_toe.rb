@@ -5,21 +5,18 @@
 # 20200825 V2.1  refactored
 
 require 'yaml'
+
 MESSAGES = YAML.load_file('ttt_messages.yml')
 LINE_WIDTH = 80
 MINIMAX_VAL = 999
-
 PLAYER_MOVE = 'X'
 COMPUTER_MOVE = 'O'
 AVAILABLE_MOVE = ' '
 WINNING_MOVES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] +
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] +
                 [[1, 5, 9], [3, 5, 7]]
-score = { player: 0, computer: 0 }
 
-def clear_screen
-  system('clear') || system('cls')
-end
+score = { player: 0, computer: 0 }
 
 def prompt(message)
   puts "=> #{message}"
@@ -27,6 +24,10 @@ end
 
 def response_prompt(message)
   print "#{message}:"
+end
+
+def clear_screen
+  system('clear') || system('cls')
 end
 
 def intro
@@ -134,8 +135,8 @@ def available_plays?(brd)
   end
 end
 
-def play_location(board_status)
-  list = available_plays?(board_status)
+def play_location(brd)
+  list = available_plays?(brd)
   (1..9).select { |num| list[num - 1] }
 end
 
@@ -179,8 +180,8 @@ def score(brd)
   0
 end
 
-def board_full?(board_status)
-  available_plays?(board_status).all?(false)
+def board_full?(brd)
+  available_plays?(brd).all?(false)
 end
 
 def three_in_row?(ary, string, board_status)
@@ -197,8 +198,8 @@ def winner(board_status)
   nil
 end
 
-def game_over?(board_status)
-  board_full?(board_status) || winner(board_status)
+def game_over?(brd)
+  board_full?(brd) || winner(brd)
 end
 
 def minimax(brd, player_is_computer = false)
@@ -256,6 +257,7 @@ def print_winner(brd, points)
 end
 
 def go_again?
+  puts
   loop do
     prompt(MESSAGES['rematch'])
     answer = gets.chomp.downcase
@@ -266,6 +268,11 @@ def go_again?
     end
     prompt(MESSAGES['yes_no_error'])
   end
+end
+
+def exit
+  clear_screen
+  prompt(MESSAGES['good_bye'])
 end
 
 # main script
@@ -284,8 +291,9 @@ loop do
     end
     clear_screen
     print_winner(board, score)
+    display_board(board)
     enter_to_go unless (round + 1) == total_rounds
   end
   break unless go_again?
 end
-prompt(MESSAGES['good_bye'])
+exit
