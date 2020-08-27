@@ -109,29 +109,30 @@ end
 
 def board_locations
   brd = {}
-  (1..9).each { |k| brd[k] = k.to_s }
+  (1..9).each { |cell| brd[cell] = cell.to_s }
   brd
 end
 
 def initialize_board
   brd = {}
-  (1..9).each { |k| brd[k] = AVAILABLE_MOVE }
+  (1..9).each { |cell| brd[cell] = AVAILABLE_MOVE }
   brd
 end
 
-def print_round(round_number, tot_round, score, first_name)
+def print_round(round_number, total_round, score, first_name)
   clear_screen
-  l_col = "Round #{round_number + 1} of #{tot_round}.  You are #{PLAYER_MOVE}"
-  r_col = "#{first_name} #{score[:player]} | EVE  #{score[:computer]}"
-  space = LINE_WIDTH - (l_col.length + r_col.length)
-  space.times { l_col << ' ' }
-  puts l_col + r_col
+  left_col = "Round #{round_number + 1} of #{total_round}.  \
+  You are #{PLAYER_MOVE}"
+  right_col = "#{first_name} #{score[:player]} | EVE  #{score[:computer]}"
+  space = LINE_WIDTH - (left_col.length + right_col.length)
+  space.times { left_col << ' ' }
+  puts left_col + right_col
   puts
 end
 
 def available_plays?(brd)
-  brd.map do |_, v|
-    v.eql?(AVAILABLE_MOVE)
+  brd.map do |_, board_mark|
+    board_mark.eql?(AVAILABLE_MOVE)
   end
 end
 
@@ -145,15 +146,15 @@ def joinor(ary, sep = ', ', concat = 'or')
   clone_array = ary.clone
   clone_array[-1] = (concat + clone_array[-1].to_s)
   if clone_array.count > 2
-    prompt(clone_array.join(sep))
+    clone_array.join(sep)
   else
-    prompt(clone_array.join(' '))
+    clone_array.join(' ')
   end
 end
 
 def print_avail_moves(brd)
   prompt("The following moves are available")
-  joinor(play_location(brd))
+  prompt(joinor(play_location(brd)))
 end
 
 def open_board(brd)
