@@ -1,0 +1,6 @@
+# twenty_one.yml
+# Doug Catharine
+# 20200827
+
+hit: "Do you want another card?"
+yes_or_no_error: "Please enter 'y', 'n', 'Y' or 'n'."
